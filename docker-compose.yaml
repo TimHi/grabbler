@@ -4,11 +4,9 @@ services:
       context: ./backend 
       dockerfile: Dockerfile
     container_name: grabbler-backend
-    environment:
-      AUDIO_OUTPUT_DIR: /downloads
     #e.g:  /Users/tim/dev/grabbler/t
     volumes:
-      - /Users/tim/dev/grabbler/t:/downloads
+      - /Users/tim/dev/grabbler/t:/app/downloads
     ports:
       - "3333:3333"
     restart: unless-stopped

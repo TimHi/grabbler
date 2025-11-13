@@ -1,26 +1,38 @@
 # --- Build stage ---
-FROM golang:1.25-alpine AS builder
-WORKDIR /app
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS builder
 
-# If your go.mod pulls from git repos, you may need git:
+WORKDIR /app
 RUN apk add --no-cache git
 
 COPY go.mod go.sum ./
 RUN go mod download
 
+ARG TARGETOS
+ARG TARGETARCH
+
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server .
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o server .
 
 # --- Runtime stage ---
 FROM alpine:3.20
 
+ARG TARGETARCH
+
 RUN apk add --no-cache \
       ca-certificates \
       ffmpeg \
-      curl \
-    && curl -L "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_musl" \
-         -o /usr/local/bin/yt-dlp \
-    && chmod +x /usr/local/bin/yt-dlp
+      curl
+
+# Use MUSL builds of yt-dlp (important for Alpine!)
+RUN set -eux; \
+    case "$TARGETARCH" in \
+      "amd64")  YT_BIN="yt-dlp_musllinux" ;; \
+      "arm64")  YT_BIN="yt-dlp_musllinux_aarch64" ;; \
+      *) echo "Unsupported arch: $TARGETARCH"; exit 1 ;; \
+    esac; \
+    curl -L "https://github.com/yt-dlp/yt-dlp/releases/latest/download/${YT_BIN}" \
+      -o /usr/local/bin/yt-dlp; \
+    chmod +x /usr/local/bin/yt-dlp
 
 WORKDIR /app
 COPY --from=builder /app/server /app/server

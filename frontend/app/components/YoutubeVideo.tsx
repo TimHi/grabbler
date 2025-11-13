@@ -22,10 +22,12 @@ export default function YoutubeVideo({ videoURL }: YoutubeVideoProps) {
         try {
             setStatus(STATUS.DOWNLOADING);
             const videoID = YouTubeVideoId(videoURL);
-            const response = await fetch(`http://localhost:3333/download?id=${videoID}`);
+            
+            //const backendURL = process.env.NODE_ENV === "development" ?  `http://localhost:3333/download?id=${videoID}` : `http://grabbler-backend:3333/download?id=${videoID}`;
+            const backendURL = `http://localhost:3333/download?id=${videoID}`;
+            const response = await fetch(backendURL);
             if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
-            const result = await response.text();
             setStatus(STATUS.FINISHED);
 
         } catch (err) {
