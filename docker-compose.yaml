@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   grabbler-backend:
     build:
@@ -10,7 +8,7 @@ services:
       AUDIO_OUTPUT_DIR: /downloads
     #e.g:  /Users/tim/dev/grabbler/t
     volumes:
-      - ${DOWNLOAD_FOLDER}:/downloads
+      - /Users/tim/dev/grabbler/t:/downloads
     ports:
       - "3333:3333"
     restart: unless-stopped

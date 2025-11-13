@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -16,43 +15,8 @@ import (
 	"github.com/wader/goutubedl"
 )
 
-// --- Config ---
-
-// AUDIO_OUTPUT_DIR controls where files are written. Falls back to ./downloads if unset.
-func outputDir() string {
-	if v := os.Getenv("AUDIO_OUTPUT_DIR"); strings.TrimSpace(v) != "" {
-		return v
-	}
-	return "./downloads"
-}
-
 func ensureDir(path string) error {
 	return os.MkdirAll(path, 0o755)
-}
-
-// --- Utilities ---
-
-// Sets proper Content-Type and Content-Disposition based on goutubedl.Info (kept in case you want it for other endpoints)
-func setDownloadHeaders(w http.ResponseWriter, info *goutubedl.Info) {
-	filename := "audio"
-	ext := "m4a"
-
-	if info != nil {
-		if info.Title != "" {
-			filename = sanitizeFilename(info.Title)
-		}
-		if info.Format.Ext != "" {
-			ext = info.Format.Ext
-		}
-	}
-
-	mime := mimeFromExt(ext)
-	w.Header().Set("Content-Type", mime)
-	w.Header().Set("Content-Disposition",
-		fmt.Sprintf(`attachment; filename="%s.%s"`, filename, ext),
-	)
-
-	// ⚠️ Don't set Content-Length unless it's exact — YouTube sometimes omits it
 }
 
 // Basic MIME detection for audio formats YouTube provides
@@ -97,15 +61,6 @@ func uniquePath(dir, base, ext string) string {
 	return filepath.Join(dir, fmt.Sprintf("%s-%s.%s", base, ts, ext))
 }
 
-// --- HTTP ---
-
-type saveResponse struct {
-	Path     string `json:"path"`
-	Filename string `json:"filename"`
-	MIME     string `json:"mime"`
-	Size     int64  `json:"size"`
-}
-
 func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get("id")
@@ -142,17 +97,14 @@ func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	mime := mimeFromExt(ext)
 
-	// Ensure output directory exists
-	dir := outputDir()
+	dir := "./downloads"
 	if err := ensureDir(dir); err != nil {
 		http.Error(w, "failed to create output directory: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Build a unique file path
 	outPath := uniquePath(dir, filename, ext)
 
-	// Create destination file
 	f, err := os.OpenFile(outPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o644)
 	if err != nil {
 		http.Error(w, "failed to create file: "+err.Error(), http.StatusInternalServerError)
@@ -160,27 +112,18 @@ func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer f.Close()
 
-	// Copy stream to file
 	n, err := io.Copy(f, rc)
 	if err != nil {
 		log.Printf("write error: %v", err)
 		http.Error(w, "failed while writing file: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("Done! Sending shit")
-	// Respond with JSON about the saved file
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(saveResponse{
-		Path:     outPath,
-		Filename: filepath.Base(outPath),
-		MIME:     mime,
-		Size:     n,
-	})
+	fmt.Println("Done! %w", n)
+
+	fmt.Fprintf(w, "Success! Downloaded %s.%s", filename, mime)
 }
 
 func main() {
-	log.Printf("AUDIO_OUTPUT_DIR=%q (default ./downloads if empty)", outputDir())
-
 	r := mux.NewRouter()
 	r.HandleFunc("/download", downloadAudioHandler).Methods(http.MethodGet, http.MethodOptions)
 

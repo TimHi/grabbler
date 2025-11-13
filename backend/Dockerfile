@@ -1,25 +1,31 @@
 # --- Build stage ---
-FROM golang:1.22-bookworm AS builder
+FROM golang:1.25-alpine AS builder
 WORKDIR /app
+
+# If your go.mod pulls from git repos, you may need git:
+RUN apk add --no-cache git
+
 COPY go.mod go.sum ./
 RUN go mod download
+
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server .
 
 # --- Runtime stage ---
-FROM debian:bookworm-slim
-# yt-dlp + ffmpeg are required for many formats/merges
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates curl python3 python3-pip ffmpeg \
-    && pip3 install --no-cache-dir yt-dlp \
-    && rm -rf /var/lib/apt/lists/*
+FROM alpine:3.20
+
+RUN apk add --no-cache \
+      ca-certificates \
+      ffmpeg \
+      curl \
+    && curl -L "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_musl" \
+         -o /usr/local/bin/yt-dlp \
+    && chmod +x /usr/local/bin/yt-dlp
+
 WORKDIR /app
 COPY --from=builder /app/server /app/server
 
-# Where we'll write downloads INSIDE the container (you will mount over this)
 ENV AUDIO_OUTPUT_DIR=/downloads
-
-# Create the directory and make it writable
 RUN mkdir -p /downloads && chmod 775 /downloads
 
 EXPOSE 3333

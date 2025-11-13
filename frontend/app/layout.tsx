@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Video Grabbler",
+  title: "Audio Grabbler",
   description: "Grabble einfach org alle Videos",
 };
 
