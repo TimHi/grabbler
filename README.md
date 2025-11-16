@@ -1,6 +1,6 @@
 # Grabbler
 
-Simple frontend to download a YouTube Video from a given URL. Metadata is fetched from a given Musicbrainz Recording ID.
+Simple frontend to download a YouTube Video from a given URL. Metadata is fetched from a given Musicbrainz Recording ID.   
 Metadata is not yet added to the downloaded file.
 
 ## Usage
@@ -25,3 +25,7 @@ services:
 ```
 
 Replace `PATH_TO_DOWNLOAD` with your desired target download folder.
+
+## TODO
+[ ] Enrich downloaded audio file with metadata  
+[ ] Add support for time codes 
