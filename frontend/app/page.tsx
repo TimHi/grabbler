@@ -63,13 +63,14 @@ export default function Home() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div className="flex min-h-screen items-center flex-col p-4">
-        <main className="flex flex-col min-h-screen w-full p-4 items-center justify-center">
-          <VideoForm setURL={(e: string) => setVideoUrl(e)} setMusicBrainzId={(e: string) => setMusicBrainzId(e)}></VideoForm>
-          <YoutubeVideo videoURL={videoUrl}></YoutubeVideo>
-          <div className="pt-4">
-            {getStatusText()}
-          </div>
+      <div className="flex min-h-screen flex-col p-4">
+        <main className="flex flex-col min-h-screen w-full items-center">
+          <Typography color="textPrimary" variant="h3">Audio Grabbler</Typography>
+            <VideoForm setURL={(e: string) => setVideoUrl(e)} setMusicBrainzId={(e: string) => setMusicBrainzId(e)}></VideoForm>
+            <YoutubeVideo videoURL={videoUrl}></YoutubeVideo>
+            <div className="pt-4">
+              {getStatusText()}
+            </div>
         </main>
       </div>
     </ThemeProvider>
