@@ -20,7 +20,8 @@
     "react-dom": "19.2.0",
     "react-youtube": "^10.1.0",
     "styled-components": "^6.1.19",
-    "youtube-video-id": "^1.0.5"
+    "youtube-video-id": "^1.0.5",
+      "typescript": "^5.2.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -29,7 +30,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "tailwindcss": "^4"
   }
 }

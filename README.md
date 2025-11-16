@@ -11,17 +11,17 @@ You can either clone the repo, run backend and frontend manually or use docker.
 services:
   backend:
     container_name: grabbler-backend
-    image: ghcr.io/timhi/grabbler-backend:latest
+    image: ghcr.io/timhi/grabbler-backend:main
     volumes:
-      - /Users/tim/dev/grabbler/t:/app/downloads
+      - PATH_TO_DOWNLOAD:/app/downloads
     ports:
       - "3333:3333"
 
   frontend:
     container_name: grabbler-frontend
-    image: ghcr.io/timhi/grabbler-frontend:latest
-    volumes:
-      - /Users/tim/dev/grabbler/t:/app/downloads
+    image: ghcr.io/timhi/grabbler-frontend:main
     ports:
       - "3000:3000"
 ```
+
+Replace `PATH_TO_DOWNLOAD` with your desired target download folder.
