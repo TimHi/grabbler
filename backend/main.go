@@ -1,18 +1,21 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/wader/goutubedl"
+	"go.uploadedlobster.com/mbtypes"
+	"go.uploadedlobster.com/musicbrainzws2"
 )
 
 func ensureDir(path string) error {
@@ -61,16 +64,76 @@ func uniquePath(dir, base, ext string) string {
 	return filepath.Join(dir, fmt.Sprintf("%s-%s.%s", base, ts, ext))
 }
 
+func getMetaData(id string) (musicbrainzws2.Recording, error) {
+	client := musicbrainzws2.NewClient(musicbrainzws2.AppInfo{
+		Name:    "my-tool",
+		Version: "1.0",
+	})
+	defer client.Close()
+	ctx := context.Background()
+
+	filter := musicbrainzws2.IncludesFilter{
+		Includes: []string{
+			"releases",       // release-list containing this recording
+			"artist-credits", // artist credit info
+			"isrcs",          // ISRCs
+			"tags",           // tags
+			"genres",         // genres
+			"recording-rels", // recording relations (samples/remixes/etc.)
+			"work-rels",      // linked works
+			"artist-rels",    // artist relations
+			"url-rels",       // external URLs
+		},
+	}
+	return client.LookupRecording(ctx, mbtypes.MBID(id), filter)
+	// ; err == nil {
+	// 	fmt.Println("Recording:")
+	// 	fmt.Println(result.Title)
+	// 	fmt.Println(result.Genres)
+	// 	fmt.Println(result.Annotation)
+	// 	fmt.Println(result.ArtistCredit)
+	// 	fmt.Println(result.FirstReleaseDate)
+	// 	fmt.Println(result.Tags)
+
+	// 	// Print the titles of all found releases
+	// 	for i, release := range result.Releases {
+	// 		fmt.Printf("Release %d \n", i)
+	// 		fmt.Println(release.ID)
+	// 		fmt.Println(release.Title)
+	// 		fmt.Println(release.Score)
+	// 		fmt.Println(release.Disambiguation)
+	// 		fmt.Println(release.Annotation)
+	// 		fmt.Println(release.Genres)
+	// 	}
+	// } else {
+	// 	log.Fatal(err)
+	// }
+}
+
 func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get("id")
 
+	musicbrainzId := r.URL.Query().Get("musicbrainzid")
+
 	if id == "" {
+		log.Error("Missing Youtube ID")
 		http.Error(w, "missing id parameter", http.StatusBadRequest)
 		return
 	}
 
-	fmt.Printf("Received request for id %s \n", id)
+	var metaData musicbrainzws2.Recording
+	if musicbrainzId != "" {
+		tMetaData, err := getMetaData(musicbrainzId)
+		if err != nil {
+			log.Error("Error fetching Metadata from Musibrainz", "id", id)
+		}
+
+		metaData = tMetaData
+	}
+	fmt.Println(metaData)
+
+	log.Debug("Received request for id %s \n", id)
 	ctx := r.Context()
 
 	result, err := goutubedl.New(ctx, id, goutubedl.Options{})
@@ -80,7 +143,9 @@ func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rc, err := result.Download(ctx, "bestaudio") // Only audio stream
+
 	if err != nil {
+		log.Error("Error downloading from Youtube", "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -99,6 +164,7 @@ func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
 
 	dir := "./downloads"
 	if err := ensureDir(dir); err != nil {
+		log.Error("Error creating output directory", "err", err)
 		http.Error(w, "failed to create output directory: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -107,18 +173,18 @@ func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
 
 	f, err := os.OpenFile(outPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o644)
 	if err != nil {
+		log.Error("Error creating file", "err", err)
 		http.Error(w, "failed to create file: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer f.Close()
 
-	n, err := io.Copy(f, rc)
+	_, err = io.Copy(f, rc)
 	if err != nil {
-		log.Printf("write error: %v", err)
+		log.Error("Error writing file", "err", err)
 		http.Error(w, "failed while writing file: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("Done! %w", n)
 
 	fmt.Fprintf(w, "Success! Downloaded %s.%s", filename, mime)
 }
@@ -133,6 +199,6 @@ func main() {
 		handlers.AllowedHeaders([]string{"Content-Type"}),
 	)
 
-	fmt.Println("Server running on http://localhost:3333")
-	log.Fatal(http.ListenAndServe(":3333", cors(r)))
+	log.Info("Server running on http://localhost:3333")
+	log.Error(http.ListenAndServe(":3333", cors(r)))
 }

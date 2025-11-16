@@ -15,10 +15,9 @@ export default function Home() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="flex min-h-screen items-center flex-col p-4">
-        <main className="min-h-screen w-full p-4 items-center">
+        <main className="flex flex-col min-h-screen w-full p-4 items-center justify-center">
           <VideoForm setURL={(e: string) => setVideoUrl(e)}></VideoForm>
           <YoutubeVideo videoURL={videoUrl}></YoutubeVideo> 
-          <Typography>Video URL rein und ab gehts</Typography>
         </main>
       </div>
     </ThemeProvider>
