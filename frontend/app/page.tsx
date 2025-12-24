@@ -43,16 +43,16 @@ export default function Home() {
       case STATUS.READY: return <Button variant="contained" startIcon={<Download />} onClick={() => downloadVideo()}>
         Runnerladen
       </Button>;
-      case STATUS.DOWNLOADING: return <CircularProgress color="secondary" />;
+      case STATUS.DOWNLOADING: return <CircularProgress className="status-spinner" />;
       case STATUS.FINISHED: return (
         <div>
-          <Typography>Download successfull! 👺</Typography>
+          <Typography className="status-text status-text--success">Download successfull! 👺</Typography>
           <Button variant="contained" startIcon={<Download />} onClick={() => downloadVideo()}>Download</Button>
         </div>
       )
       case STATUS.ERROR: return (
         <>
-          <Typography>Error downloading 🥴</Typography>
+          <Typography className="status-text status-text--error">Error downloading 🥴</Typography>
           <Button variant="contained" startIcon={<Download />} onClick={() => downloadVideo()}>
             Try again 🤠
           </Button>
@@ -63,16 +63,24 @@ export default function Home() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div className="flex min-h-screen flex-col p-4">
-        <main className="flex flex-col min-h-screen w-full items-center">
-          <Typography color="textPrimary" variant="h3">Audio Grabbler</Typography>
-            <VideoForm setURL={(e: string) => setVideoUrl(e)} setMusicBrainzId={(e: string) => setMusicBrainzId(e)}></VideoForm>
-            <YoutubeVideo videoURL={videoUrl}></YoutubeVideo>
-            <div className="pt-4">
-              {getStatusText()}
+      <div className="app-shell">
+        <div className="app-glow" />
+        <main className="app-main">
+          <Typography variant="h3" className="app-title">
+            Audio Grabbler
+          </Typography>
+          <div className="app-card">
+            <div className="flex flex-col gap-6">
+              <VideoForm setURL={(e: string) => setVideoUrl(e)} setMusicBrainzId={(e: string) => setMusicBrainzId(e)}></VideoForm>
+              <YoutubeVideo videoURL={videoUrl}></YoutubeVideo>
+              <div className="flex items-center justify-center pt-2">
+                {getStatusText()}
+              </div>
             </div>
+          </div>
         </main>
       </div>
     </ThemeProvider>
   );
 }
+
