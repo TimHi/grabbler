@@ -286,7 +286,21 @@ func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
 	log.Debug("Received request for id %s \n", id)
 	ctx := r.Context()
 
-	result, err := goutubedl.New(ctx, id, goutubedl.Options{})
+	opts := goutubedl.Options{}
+	cookies := strings.TrimSpace(os.Getenv("YTDLP_COOKIES"))
+	cookiesFromBrowser := strings.TrimSpace(os.Getenv("YTDLP_COOKIES_FROM_BROWSER"))
+	if cookies != "" && cookiesFromBrowser != "" {
+		log.Warn("Both YTDLP_COOKIES and YTDLP_COOKIES_FROM_BROWSER are set; using browser cookies")
+		cookies = ""
+	}
+	if cookies != "" {
+		opts.Cookies = cookies
+	}
+	if cookiesFromBrowser != "" {
+		opts.CookiesFromBrowser = cookiesFromBrowser
+	}
+
+	result, err := goutubedl.New(ctx, id, opts)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
