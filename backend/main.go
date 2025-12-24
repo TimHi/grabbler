@@ -85,29 +85,9 @@ func getMetaData(id string) (musicbrainzws2.Recording, error) {
 			"url-rels",       // external URLs
 		},
 	}
-	return client.LookupRecording(ctx, mbtypes.MBID(id), filter)
-	// ; err == nil {
-	// 	fmt.Println("Recording:")
-	// 	fmt.Println(result.Title)
-	// 	fmt.Println(result.Genres)
-	// 	fmt.Println(result.Annotation)
-	// 	fmt.Println(result.ArtistCredit)
-	// 	fmt.Println(result.FirstReleaseDate)
-	// 	fmt.Println(result.Tags)
 
-	// 	// Print the titles of all found releases
-	// 	for i, release := range result.Releases {
-	// 		fmt.Printf("Release %d \n", i)
-	// 		fmt.Println(release.ID)
-	// 		fmt.Println(release.Title)
-	// 		fmt.Println(release.Score)
-	// 		fmt.Println(release.Disambiguation)
-	// 		fmt.Println(release.Annotation)
-	// 		fmt.Println(release.Genres)
-	// 	}
-	// } else {
-	// 	log.Fatal(err)
-	// }
+	return client.LookupRecording(ctx, mbtypes.MBID(id), filter)
+
 }
 
 func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
@@ -127,6 +107,27 @@ func downloadAudioHandler(w http.ResponseWriter, r *http.Request) {
 		tMetaData, err := getMetaData(musicbrainzId)
 		if err != nil {
 			log.Error("Error fetching Metadata from Musibrainz", "id", id)
+		}
+		if err == nil {
+			fmt.Println("Recording:")
+			fmt.Println(tMetaData.Title)
+			fmt.Println(tMetaData.Genres)
+			fmt.Println(tMetaData.Annotation)
+			fmt.Println(tMetaData.ArtistCredit)
+			fmt.Println(tMetaData.FirstReleaseDate)
+			fmt.Println(tMetaData.Tags)
+			// Print the titles of all found releases
+			for i, release := range tMetaData.Releases {
+				fmt.Printf("Release %d \n", i)
+				fmt.Println(release.ID)
+				fmt.Println(release.Title)
+				fmt.Println(release.Score)
+				fmt.Println(release.Disambiguation)
+				fmt.Println(release.Annotation)
+				fmt.Println(release.Genres)
+			}
+		} else {
+			log.Fatal(err)
 		}
 
 		metaData = tMetaData
