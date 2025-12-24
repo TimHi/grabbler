@@ -5,7 +5,14 @@
 @import '@fontsource/roboto/700.css';
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  --text-primary: #0b1220;
+  --text-muted: #4b5563;
+  --accent: #007aff;
+  --accent-soft: rgba(0, 122, 255, 0.18);
 }
 
 .app-shell {
@@ -13,23 +20,23 @@
   min-height: 100vh;
   overflow: hidden;
   padding: 1.5rem;
-  color: #f8fafc;
+  color: var(--text-primary);
   background:
-    radial-gradient(1200px circle at 15% 10%, rgba(56, 189, 248, 0.25), transparent 40%),
-    radial-gradient(900px circle at 85% 15%, rgba(248, 113, 113, 0.18), transparent 35%),
-    linear-gradient(180deg, rgba(2, 6, 23, 0.95), rgba(15, 23, 42, 0.98));
+    radial-gradient(1200px circle at 20% 12%, rgba(90, 153, 255, 0.28), transparent 45%),
+    radial-gradient(900px circle at 85% 18%, rgba(255, 200, 175, 0.32), transparent 40%),
+    linear-gradient(160deg, #f5f7fb, #e8eef8 45%, #dfe9f8);
 }
 
 .app-glow {
   position: absolute;
-  top: -8rem;
+  top: -10rem;
   left: 50%;
-  height: 16rem;
-  width: 32rem;
+  height: 18rem;
+  width: 36rem;
   transform: translateX(-50%);
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(56, 189, 248, 0.25), rgba(103, 232, 249, 0.2), rgba(251, 113, 133, 0.25));
-  filter: blur(48px);
+  background: linear-gradient(90deg, rgba(0, 122, 255, 0.24), rgba(90, 200, 250, 0.18), rgba(255, 159, 10, 0.2));
+  filter: blur(60px);
   pointer-events: none;
 }
 
@@ -46,7 +53,7 @@
 
 .app-title {
   text-align: center;
-  background: linear-gradient(90deg, #f8fafc, #a5f3fc 45%, #fda4af);
+  background: linear-gradient(100deg, #0f172a, #1d4ed8 40%, #0284c7);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -56,29 +63,29 @@
   width: 100%;
   max-width: 42rem;
   border-radius: 1.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
   padding: 2rem;
-  box-shadow: 0 20px 80px rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(22px);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(22px) saturate(160%);
 }
 
 .status-text {
   margin-bottom: 0.5rem;
   text-align: center;
-  color: rgba(226, 232, 240, 0.9);
+  color: var(--text-muted);
 }
 
 .status-text--success {
-  color: rgba(187, 247, 208, 0.95);
+  color: #0f766e;
 }
 
 .status-text--error {
-  color: rgba(251, 113, 133, 0.95);
+  color: #dc2626;
 }
 
 .status-spinner {
-  color: rgba(94, 234, 212, 0.9);
+  color: var(--accent);
 }
 
 .video-form {
@@ -91,5 +98,23 @@
 
 .video-form .MuiTextField-root {
   width: min(100%, 560px);
+}
+
+.youtube-preview {
+  position: relative;
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.7),
+    0 24px 50px rgba(0, 122, 255, 0.22);
+  backdrop-filter: blur(16px) saturate(140%);
+}
+
+.youtube-preview iframe {
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.6),
+    0 16px 36px rgba(0, 122, 255, 0.18);
 }
 

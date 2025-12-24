@@ -40,21 +40,25 @@ export default function Home() {
 
   function getStatusText() {
     switch (status) {
-      case STATUS.READY: return <Button variant="contained" startIcon={<Download />} onClick={() => downloadVideo()}>
-        Runnerladen
-      </Button>;
+      case STATUS.READY: return (
+        <Button variant="contained" startIcon={<Download />} onClick={() => downloadVideo()}>
+          Start download
+        </Button>
+      );
       case STATUS.DOWNLOADING: return <CircularProgress className="status-spinner" />;
       case STATUS.FINISHED: return (
         <div>
-          <Typography className="status-text status-text--success">Download successfull! 👺</Typography>
-          <Button variant="contained" startIcon={<Download />} onClick={() => downloadVideo()}>Download</Button>
+          <Typography className="status-text status-text--success">Download complete.</Typography>
+          <Button variant="contained" startIcon={<Download />} onClick={() => downloadVideo()}>
+            Download again
+          </Button>
         </div>
       )
       case STATUS.ERROR: return (
         <>
-          <Typography className="status-text status-text--error">Error downloading 🥴</Typography>
+          <Typography className="status-text status-text--error">Download failed. Please try again.</Typography>
           <Button variant="contained" startIcon={<Download />} onClick={() => downloadVideo()}>
-            Try again 🤠
+            Retry download
           </Button>
         </>
       )
@@ -67,7 +71,7 @@ export default function Home() {
         <div className="app-glow" />
         <main className="app-main">
           <Typography variant="h3" className="app-title">
-            Audio Grabbler
+            Audio Grabber
           </Typography>
           <div className="app-card">
             <div className="flex flex-col gap-6">
@@ -83,4 +87,3 @@ export default function Home() {
     </ThemeProvider>
   );
 }
-

@@ -27,20 +27,20 @@ export default function YoutubeVideo({ videoURL }: YoutubeVideoProps) {
         const videoID = YouTubeVideoId(videoURL);
 
         if (!videoID) {
-            return <Typography color="textPrimary" variant="h3">Bist deppert die ID {videoURL} ist Mist</Typography>;
+            return <Typography color="textPrimary" variant="h3">Invalid YouTube URL. Please check and try again.</Typography>;
         }
 
 
         return (
-            <div className="flex flex-col items-center justify-center w-full gap-4">
+            <div className="flex flex-col items-center justify-center w-full gap-4 youtube-preview">
                 <YouTube videoId={videoID} opts={opts} />
-                
+
             </div>
         );
 
     } catch (e) {
         console.error("Invalid YouTube ID:", e);
-        return <Typography color="textPrimary" variant="h3">Bist deppert die ID {videoURL} ist Mist</Typography>;
+        return <Typography color="textPrimary" variant="h3">Invalid YouTube URL. Please check and try again.</Typography>;
 
     }
 }

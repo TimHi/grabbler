@@ -133,6 +133,14 @@ func uniqueNonEmpty(items []string) []string {
 	return out
 }
 
+func addID3TXXX(args *[]string, description, value string) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return
+	}
+	*args = append(*args, "-metadata", fmt.Sprintf("TXXX:%s=%s", description, value))
+}
+
 func buildAudioTags(rec musicbrainzws2.Recording) audioTags {
 	var tags audioTags
 	tags.Title = rec.Title
@@ -201,6 +209,23 @@ func transcodeAndTagToMP3(inputPath, outputPath string, rec musicbrainzws2.Recor
 	}
 	if tags.Genre != "" {
 		args = append(args, "-metadata", fmt.Sprintf("genre=%s", tags.Genre))
+	}
+	addID3TXXX(&args, "MusicBrainz Track Id", string(rec.ID))
+
+	var artistIDs []string
+	for _, credit := range rec.ArtistCredit {
+		artistIDs = append(artistIDs, string(credit.Artist.ID))
+	}
+	for _, artistID := range uniqueNonEmpty(artistIDs) {
+		addID3TXXX(&args, "MusicBrainz Artist Id", artistID)
+	}
+
+	if len(rec.Releases) > 0 {
+		release := rec.Releases[0]
+		addID3TXXX(&args, "MusicBrainz Release Id", string(release.ID))
+		if release.ReleaseGroup != nil {
+			addID3TXXX(&args, "MusicBrainz Release Group Id", string(release.ReleaseGroup.ID))
+		}
 	}
 	args = append(args, "-c:a", "libmp3lame", "-q:a", "2", "-id3v2_version", "3", "-write_id3v1", "1", tmpPath)
 

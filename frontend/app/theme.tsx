@@ -9,12 +9,12 @@ const themeOptions: ThemeOptions = {
       main: "#fb7185"
     },
     background: {
-      default: "#0f172a",
-      paper: "#0b1120"
+      default: "#f5f7fb",
+      paper: "#eef2f8"
     },
     text: {
-      primary: "#f8fafc",
-      secondary: "#cbd5f5"
+      primary: "#0b1220",
+      secondary: "#334155"
     }
   },
   shape: {
@@ -40,13 +40,15 @@ const themeOptions: ThemeOptions = {
           paddingLeft: "28px",
           paddingRight: "28px",
           paddingTop: "10px",
-          paddingBottom: "10px"
+          paddingBottom: "10px",
+          transition: "box-shadow 200ms ease"
         },
         contained: {
           background: "linear-gradient(90deg, rgba(56,189,248,1) 0%, rgba(236,72,153,1) 100%)",
           boxShadow: "0 18px 45px rgba(56,189,248,0.35)",
           "&:hover": {
-            background: "linear-gradient(90deg, rgba(14,165,233,1) 0%, rgba(248,113,113,1) 100%)"
+            background: "linear-gradient(90deg, rgba(56,189,248,1) 0%, rgba(236,72,153,1) 100%)",
+            boxShadow: "0 18px 45px rgba(56,189,248,0.45)"
           }
         }
       }
@@ -55,22 +57,22 @@ const themeOptions: ThemeOptions = {
       styleOverrides: {
         root: {
           borderRadius: 20,
-          backgroundColor: "rgba(15, 23, 42, 0.75)",
-          boxShadow: "0 12px 30px rgba(15, 23, 42, 0.35)",
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          boxShadow: "0 12px 30px rgba(15, 23, 42, 0.12)",
           backdropFilter: "blur(10px)",
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "rgba(148, 163, 184, 0.55)"
+            borderColor: "rgba(100, 116, 139, 0.6)"
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "rgba(56, 189, 248, 0.75)",
-            boxShadow: "0 0 0 2px rgba(56, 189, 248, 0.2)"
+            borderColor: "rgba(0, 122, 255, 0.6)",
+            boxShadow: "0 0 0 2px rgba(0, 122, 255, 0.2)"
           }
         },
         notchedOutline: {
-          borderColor: "rgba(148, 163, 184, 0.35)"
+          borderColor: "rgba(100, 116, 139, 0.35)"
         },
         input: {
-          color: "rgba(248, 250, 252, 0.95)",
+          color: "rgba(15, 23, 42, 0.9)",
           paddingTop: "16px",
           paddingBottom: "16px"
         }
@@ -79,9 +81,9 @@ const themeOptions: ThemeOptions = {
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: "rgba(148, 163, 184, 0.9)",
+          color: "rgba(71, 85, 105, 0.95)",
           "&.Mui-focused": {
-            color: "rgba(125, 211, 252, 0.95)"
+            color: "rgba(30, 64, 175, 0.95)"
           }
         }
       }
